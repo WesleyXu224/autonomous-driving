@@ -67,13 +67,17 @@ class KittiSOTDataset(SOTDatasetTemplate):
                 ])
             seq_label = seq_label[seq_label["type"] == self.class_names[0]]
             ########################
+            track_ids = seq_label['track_id'].tolist()
+            # print(track_ids)
             # KITTI tracking dataset BUG
             if sequence == '0001':
                 seq_label = seq_label[(~seq_label['frame'].isin([177,178,179,180]))]
             ########################
-
+            # print("seq_label",seq_label)
             seq_label.insert(loc=0, column="sequence", value=sequence)
+            # print("seq_label.track_id",seq_label.track_id)
             for track_id in seq_label.track_id.unique():
+                # print("track_idtrack_id",track_id)
                 seq_tracklet = seq_label[seq_label["track_id"] == track_id]
                 seq_tracklet = seq_tracklet.reset_index(drop=True)
                 tracklet_anno = [anno for index, anno in seq_tracklet.iterrows()]   

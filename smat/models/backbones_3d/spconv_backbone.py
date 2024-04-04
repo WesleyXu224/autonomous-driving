@@ -9,18 +9,23 @@ def post_act_block(in_channels, out_channels, kernel_size, indice_key=None, stri
 
     if conv_type == 'subm':
         conv = spconv.SubMConv3d(in_channels, out_channels, kernel_size, bias=False, indice_key=indice_key)
+        
     elif conv_type == 'spconv':
+        
         conv = spconv.SparseConv3d(in_channels, out_channels, kernel_size, stride=stride, padding=padding,
                                    bias=False, indice_key=indice_key)
     elif conv_type == 'inverseconv':
+        
         conv = spconv.SparseInverseConv3d(in_channels, out_channels, kernel_size, indice_key=indice_key, bias=False)
     else:
+        
         raise NotImplementedError
 
     m = spconv.SparseSequential(
         conv,
         norm_fn(out_channels),
-        nn.ReLU(),
+        # nn.ReLU(),
+        nn.LeakyReLU(negative_slope=0.01),
     )
 
     return m
@@ -38,7 +43,8 @@ class SparseBasicBlock(spconv.SparseModule):
             inplanes, planes, kernel_size=3, stride=stride, padding=1, bias=bias, indice_key=indice_key
         )
         self.bn1 = norm_fn(planes)
-        self.relu = nn.ReLU()
+        # self.relu = nn.ReLU()
+        self.leakyrelu = nn.LeakyReLU(negative_slope=0.01)
         self.conv2 = spconv.SubMConv3d(
             planes, planes, kernel_size=3, stride=stride, padding=1, bias=bias, indice_key=indice_key
         )
@@ -51,7 +57,7 @@ class SparseBasicBlock(spconv.SparseModule):
 
         out = self.conv1(x)
         out = replace_feature(out, self.bn1(out.features))
-        out = replace_feature(out, self.relu(out.features))
+        out = replace_feature(out, self.leakyrelu(out.features))
 
         out = self.conv2(out)
         out = replace_feature(out, self.bn2(out.features))
@@ -60,7 +66,7 @@ class SparseBasicBlock(spconv.SparseModule):
             identity = self.downsample(x)
 
         out = replace_feature(out, out.features + identity.features)
-        out = replace_feature(out, self.relu(out.features))
+        out = replace_feature(out, self.leakyrelu(out.features))
 
         return out
 
@@ -77,7 +83,8 @@ class VoxelBackBone8x(nn.Module):
         self.conv_input = spconv.SparseSequential(
             spconv.SubMConv3d(input_channels, 16, 3, padding=1, bias=False, indice_key='subm1'),
             norm_fn(16),
-            nn.ReLU(),
+            # nn.ReLU(),
+            nn.LeakyReLU(negative_slope=0.01),
         )
         block = post_act_block
 
@@ -113,7 +120,8 @@ class VoxelBackBone8x(nn.Module):
             spconv.SparseConv3d(64, 128, (3, 1, 1), stride=(2, 1, 1), padding=last_pad,
                                 bias=False, indice_key='spconv_down2'),
             norm_fn(128),
-            nn.ReLU(),
+            # nn.ReLU(),
+            nn.LeakyReLU(negative_slope=0.01),
         )
         self.num_point_features = 128
         
@@ -204,7 +212,8 @@ class VoxelResBackBone8x(nn.Module):
         self.conv_input = spconv.SparseSequential(
             spconv.SubMConv3d(input_channels, 16, 3, padding=1, bias=False, indice_key='subm1'),
             norm_fn(16),
-            nn.ReLU(),
+            # nn.ReLU(),
+            nn.LeakyReLU(negative_slope=0.01),
         )
         block = post_act_block
 
@@ -241,7 +250,8 @@ class VoxelResBackBone8x(nn.Module):
             spconv.SparseConv3d(128, 128, (3, 1, 1), stride=(2, 1, 1), padding=last_pad,
                                 bias=False, indice_key='spconv_down2'),
             norm_fn(128),
-            nn.ReLU(),
+            # nn.ReLU(),
+            nn.LeakyReLU(negative_slope=0.01),
         )
         self.num_point_features = 128
 

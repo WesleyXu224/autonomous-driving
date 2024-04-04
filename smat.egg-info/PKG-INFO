@@ -1,0 +1,7 @@
+Metadata-Version: 2.1
+Name: smat
+Version: 0.1.0+2115dcb
+Summary: The official pytorch implement of smat
+Author: Yubo Cui
+Author-email: ybcui21@stumail.neu.edu.cn
+License: Apache License 2.0

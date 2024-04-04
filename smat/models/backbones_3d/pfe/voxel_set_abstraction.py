@@ -94,7 +94,8 @@ class VoxelSetAbstraction(nn.Module):
         self.vsa_point_feature_fusion = nn.Sequential(
             nn.Linear(c_in, self.model_cfg.NUM_OUTPUT_FEATURES, bias=False),
             nn.BatchNorm1d(self.model_cfg.NUM_OUTPUT_FEATURES),
-            nn.ReLU(),
+            # nn.ReLU(),
+            nn.LeakyReLU(negative_slope=0.01),
         )
         self.num_point_features = self.model_cfg.NUM_OUTPUT_FEATURES
         self.num_point_features_before_fusion = c_in

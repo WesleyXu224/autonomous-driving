@@ -40,4 +40,6 @@ def _get_activation_fn(activation):
         return F.gelu
     if activation == "glu":
         return F.glu
-    raise RuntimeError(F"activation should be relu/gelu, not {activation}.")
+    if activation == "leakyrelu":  # 注意这里的大小写
+        return F.leaky_relu  # 注意这里的大小写
+    raise RuntimeError(f"activation should be relu/gelu/leakyrelu, not {activation}.")#1.32

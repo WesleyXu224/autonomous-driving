@@ -8,7 +8,8 @@ class FFN(nn.Module):
         super().__init__()
         self.fc1 = nn.Linear(dim, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, dim)
-        self.act = nn.GELU()
+        # self.act = nn.GELU()
+        self.act = nn.LeakyReLU(negative_slope=0.01)
         self.drop = nn.Dropout(dropout)
 
     def forward(self, x):

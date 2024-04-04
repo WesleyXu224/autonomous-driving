@@ -23,6 +23,8 @@ class AverageMeter(object):
 
     def update(self, val, n=1):
         self.val = val
+        with open('update_val.txt', 'a') as f:
+            f.write(str(val.item()) + '\n')
         self.sum += val * n
         self.count += n
         self.avg = self.sum / self.count
@@ -56,7 +58,7 @@ def estimateOverlap(box_a, box_b, dim=2):
         subm_vol = box_b.wlh[0] * box_b.wlh[1] * box_b.wlh[2]
 
         overlap = inter_vol * 1.0 / (anno_vol + subm_vol - inter_vol)
-
+    print("111")
     return overlap
 
 
@@ -72,6 +74,8 @@ class Success(object):
         self.overlaps = []
 
     def add_overlap(self, val):
+        print("222")
+        print(val)
         self.overlaps.append(val)
 
     @property
@@ -85,6 +89,8 @@ class Success(object):
                    for i in self.overlaps).astype(float) / self.count
             for thres in self.Xaxis
         ]
+        print("333")
+        print(succ)
         return np.array(succ)
 
     @property
@@ -139,6 +145,8 @@ class Precision_torch(object):
         self.accuracies = []
 
     def add_accuracy(self, val):
+#         with open('Precision_val_2.txt', 'a') as f:
+#             f.write(str(val.item()) + '\n')
         self.accuracies.append(val)
 
     @property
@@ -172,12 +180,18 @@ class Success_torch(object):
     def __init__(self, n=21, max_overlap=1):
         self.max_overlap = max_overlap
         self.Xaxis = torch.linspace(0, self.max_overlap, n).cuda()
+        print("object",object)
         self.reset()
 
     def reset(self):
         self.overlaps = []
 
     def add_overlap(self, val):
+        # print("666")
+        # print("val666 = ",val.item())
+#         with open('Success_val_2.txt', 'a') as f:
+#             f.write(str(val.item()) + '\n')
+        
         self.overlaps.append(val)
 
     @property
@@ -196,11 +210,14 @@ class Success_torch(object):
             prec.append(torch.sum(torch.cat(one)).view(1))
 
         prec = torch.cat(prec)/ self.count
-        
+        # print("777")
+        # print(prec)
         return prec
 
     @property
     def average(self):
         if len(self.overlaps) == 0:
             return 0
+        # print(self.value)
+        # print("dasdadasd")
         return torch.trapz(self.value, x=self.Xaxis) * 100 / self.max_overlap

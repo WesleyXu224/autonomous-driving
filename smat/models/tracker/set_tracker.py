@@ -39,6 +39,7 @@ class SetTracker(nn.Module):
             'point_cloud_range': self.dataset.point_cloud_range,
             'voxel_size': self.dataset.voxel_size
         }
+        # print("num_rawpoint_features",self.dataset.point_feature_encoder.num_point_features)#num_rawpoint_features 4
         for module_name in self.module_topology:
             module, model_info_dict = getattr(self, 'build_%s' % module_name)(
                 model_info_dict=model_info_dict
@@ -56,6 +57,8 @@ class SetTracker(nn.Module):
             point_cloud_range=model_info_dict['point_cloud_range'],
             voxel_size=model_info_dict['voxel_size']
         )
+        # print("num_point_features",model_info_dict['num_rawpoint_features'])
+        # print("model_info_dict['point_cloud_range']",model_info_dict['point_cloud_range'])#model_info_dict['point_cloud_range'] [-3.2 -3.2 -3.   3.2  3.2  1. ]
         model_info_dict['num_point_features'] = vfe_module.get_output_feature_dim()
         model_info_dict['module_list'].append(vfe_module)
         return vfe_module, model_info_dict

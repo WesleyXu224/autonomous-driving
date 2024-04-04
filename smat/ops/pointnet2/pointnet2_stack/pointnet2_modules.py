@@ -38,7 +38,8 @@ class StackSAModuleMSG(nn.Module):
                 shared_mlps.extend([
                     nn.Conv2d(mlp_spec[k], mlp_spec[k + 1], kernel_size=1, bias=False),
                     nn.BatchNorm2d(mlp_spec[k + 1]),
-                    nn.ReLU()
+                    # nn.ReLU()
+                    nn.LeakyReLU(negative_slope=0.01)
                 ])
             self.mlps.append(nn.Sequential(*shared_mlps))
         self.pool_method = pool_method
@@ -104,7 +105,8 @@ class StackPointnetFPModule(nn.Module):
             shared_mlps.extend([
                 nn.Conv2d(mlp[k], mlp[k + 1], kernel_size=1, bias=False),
                 nn.BatchNorm2d(mlp[k + 1]),
-                nn.ReLU()
+                # nn.ReLU()
+                nn.LeakyReLU(negative_slope=0.01)
             ])
         self.mlp = nn.Sequential(*shared_mlps)
 

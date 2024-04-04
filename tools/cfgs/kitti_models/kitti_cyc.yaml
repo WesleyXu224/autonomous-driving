@@ -11,7 +11,7 @@ DATA_CONFIG:
           }
 
         - NAME: transform_points_to_voxels
-          VOXEL_SIZE: [0.05, 0.05, 4]
+          VOXEL_SIZE: [0.025, 0.025, 4]
           MAX_POINTS_PER_VOXEL: 32
           MAX_NUMBER_OF_VOXELS: {
             'train': 1024,
@@ -87,7 +87,7 @@ MODEL:
 
 OPTIMIZATION:
     # swin
-    BATCH_SIZE_PER_GPU: 32
+    BATCH_SIZE_PER_GPU: 16
     NUM_EPOCHS: 72
 
     OPTIMIZER: adamw

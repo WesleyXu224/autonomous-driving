@@ -9,7 +9,7 @@ from timm.models.vision_transformer import _cfg
 import math
 
 class Mlp(nn.Module):
-    def __init__(self, in_features, hidden_features=None, out_features=None, act_layer=nn.GELU, drop=0., linear=False):
+    def __init__(self, in_features, hidden_features=None, out_features=None, act_layer=nn.LeakyReLU, drop=0., linear=False):
         super().__init__()
         out_features = out_features or in_features
         hidden_features = hidden_features or in_features
@@ -20,7 +20,8 @@ class Mlp(nn.Module):
         self.drop = nn.Dropout(drop)
         self.linear = linear
         if self.linear:
-            self.relu = nn.ReLU(inplace=True)
+            # self.relu = nn.ReLU(inplace=True)
+            self.leakyrelu = nn.LeakyReLU(inplace=True)
         self.apply(self._init_weights)
 
     def _init_weights(self, m):
@@ -41,7 +42,8 @@ class Mlp(nn.Module):
     def forward(self, x, H, W):
         x = self.fc1(x)
         if self.linear:
-            x = self.relu(x)
+            # x = self.relu(x)
+            x = self.leakyrelu(x)
         x = self.dwconv(x, H, W)
         x = self.act(x)
         x = self.drop(x)
@@ -76,7 +78,8 @@ class Attention(nn.Module):
             self.pool = nn.AdaptiveAvgPool2d(7)
             self.sr = nn.Conv2d(dim, dim, kernel_size=1, stride=1)
             self.norm = nn.LayerNorm(dim)
-            self.act = nn.GELU()
+            # self.act = nn.GELU()
+            self.act = nn.LeakyReLU(negative_slope=0.01)
         self.apply(self._init_weights)
 
     def _init_weights(self, m):
@@ -128,7 +131,7 @@ class Attention(nn.Module):
 class Block(nn.Module):
 
     def __init__(self, dim, num_heads, mlp_ratio=4., qkv_bias=False, qk_scale=None, drop=0., attn_drop=0.,
-                 drop_path=0., act_layer=nn.GELU, norm_layer=nn.LayerNorm, sr_ratio=1, linear=False):
+                 drop_path=0., act_layer=nn.LeakyReLU, norm_layer=nn.LayerNorm, sr_ratio=1, linear=False):
         super().__init__()
         self.norm1 = norm_layer(dim)
         self.attn = Attention(

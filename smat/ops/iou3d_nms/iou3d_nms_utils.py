@@ -69,7 +69,13 @@ def boxes_iou3d_gpu(boxes_a, boxes_b):
     max_of_min = torch.max(boxes_a_height_min, boxes_b_height_min)
     min_of_max = torch.min(boxes_a_height_max, boxes_b_height_max)
     overlaps_h = torch.clamp(min_of_max - max_of_min, min=0)
-
+    
+    # Calculate 2D IoU
+    # overlaps_bev_area = overlaps_bev * (boxes_a[:, 3] * boxes_a[:, 4])  # (N, M)
+    vol_a_bev = boxes_a[:, 3] * boxes_a[:, 4]  # (N,)
+    vol_b_bev = boxes_b[:, 3] * boxes_b[:, 4]  # (M,)
+    iou2d = overlaps_bev / torch.clamp(vol_a_bev.view(-1, 1) + vol_b_bev.view(1, -1)- overlaps_bev, min=1e-6)
+    
     # 3d iou
     overlaps_3d = overlaps_bev * overlaps_h
 
@@ -78,7 +84,7 @@ def boxes_iou3d_gpu(boxes_a, boxes_b):
 
     iou3d = overlaps_3d / torch.clamp(vol_a + vol_b - overlaps_3d, min=1e-6)
 
-    return iou3d
+    return iou3d, iou2d
 
 
 def nms_gpu(boxes, scores, thresh, pre_maxsize=None, **kwargs):

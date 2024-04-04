@@ -55,11 +55,16 @@ def eval_single_ckpt(model, test_loader, args, eval_output_dir, logger, epoch_id
     # load checkpoint
     model.load_params_from_file(filename=args.ckpt, logger=logger, to_cpu=dist_test)
     model.cuda()
-
     # start evaluation
+    if 'kit' in args.cfg_file:
+        dataset_cls = 'kitti'
+    elif 'nus' in args.cfg_file:
+        dataset_cls = 'nus'
+    else:
+        dataset_cls = 'waymo'
     eval_track_utils.eval_track_one_epoch(
-        model, test_loader, epoch_id, logger, dist_test=dist_test,
-        result_dir=eval_output_dir, save_to_file=args.save_to_file
+        model, test_loader, epoch_id, logger, dataset_cls, dist_test=dist_test,
+        result_dir=eval_output_dir, save_to_file=args.save_to_file, 
     )
 
 
@@ -131,68 +136,72 @@ def repeat_eval_ckpt(model, test_loader, args, eval_output_dir, logger, ckpt_dir
 
 
 def main():
-    args, cfg = parse_config()
-    if args.launcher == 'none':
-        dist_test = False
-        total_gpus = 1
-    else:
-        total_gpus, cfg.LOCAL_RANK = getattr(common_utils, 'init_dist_%s' % args.launcher)(
-            args.tcp_port, args.local_rank, backend='nccl'
-        )
-        dist_test = True
-
-    if args.batch_size is None:
-        args.batch_size = cfg.OPTIMIZATION.BATCH_SIZE_PER_GPU
-    else:
-        assert args.batch_size % total_gpus == 0, 'Batch size should match the number of gpus'
-        args.batch_size = args.batch_size // total_gpus
-
-    output_dir = cfg.ROOT_DIR / 'output' / cfg.EXP_GROUP_PATH / cfg.TAG / args.extra_tag
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    eval_output_dir = output_dir / 'eval'
-
-    if not args.eval_all:
-        num_list = re.findall(r'\d+', args.ckpt) if args.ckpt is not None else []
-        epoch_id = num_list[-1] if num_list.__len__() > 0 else 'no_number'
-        eval_output_dir = eval_output_dir / ('epoch_%s' % epoch_id) / cfg.DATA_CONFIG.DATA_SPLIT['test']
-    else:
-        eval_output_dir = eval_output_dir / 'eval_all_default'
-
-    if args.eval_tag is not None:
-        eval_output_dir = eval_output_dir / args.eval_tag
-
-    eval_output_dir.mkdir(parents=True, exist_ok=True)
-    log_file = eval_output_dir / ('log_eval_skip2_%s.txt' % datetime.datetime.now().strftime('%Y%m%d-%H%M%S'))
-    logger = common_utils.create_logger(log_file, rank=cfg.LOCAL_RANK)
-
-    # log to file
-    logger.info('**********************Start logging**********************')
-    gpu_list = os.environ['CUDA_VISIBLE_DEVICES'] if 'CUDA_VISIBLE_DEVICES' in os.environ.keys() else 'ALL'
-    logger.info('CUDA_VISIBLE_DEVICES=%s' % gpu_list)
-
-    if dist_test:
-        logger.info('total_batch_size: %d' % (total_gpus * args.batch_size))
-    for key, val in vars(args).items():
-        logger.info('{:16} {}'.format(key, val))
-    log_config_to_file(cfg, logger=logger)
-
-    ckpt_dir = args.ckpt_dir if args.ckpt_dir is not None else output_dir / 'ckpt'
-
-    test_set, test_loader, sampler = build_dataloader(
-        dataset_cfg=cfg.DATA_CONFIG,
-        class_names=cfg.CLASS_NAMES,
-        batch_size=args.batch_size,
-        dist=dist_test, workers=args.workers, logger=logger, training=False, eval_flag=True
-    )
-
-    model = build_network(model_cfg=cfg.MODEL, num_class=len(cfg.CLASS_NAMES), dataset=test_set)
-    with torch.no_grad():
-        if args.eval_all:
-            repeat_eval_ckpt(model, test_loader, args, eval_output_dir, logger, ckpt_dir, dist_test=dist_test)
+    try:
+        args, cfg = parse_config()
+        if args.launcher == 'none':
+            dist_test = False
+            total_gpus = 1
         else:
-            eval_single_ckpt(model, test_loader, args, eval_output_dir, logger, epoch_id, dist_test=dist_test)
+            total_gpus, cfg.LOCAL_RANK = getattr(common_utils, 'init_dist_%s' % args.launcher)(
+                args.tcp_port, args.local_rank, backend='nccl'
+            )
+            dist_test = True
 
+        if args.batch_size is None:
+            args.batch_size = cfg.OPTIMIZATION.BATCH_SIZE_PER_GPU
+        else:
+            assert args.batch_size % total_gpus == 0, 'Batch size should match the number of gpus'
+            args.batch_size = args.batch_size // total_gpus
+
+        output_dir = cfg.ROOT_DIR / 'output' / cfg.EXP_GROUP_PATH / cfg.TAG / args.extra_tag
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        eval_output_dir = output_dir / 'eval'
+
+        if not args.eval_all:
+            num_list = re.findall(r'\d+', args.ckpt) if args.ckpt is not None else []
+            epoch_id = num_list[-1] if num_list.__len__() > 0 else 'no_number'
+            eval_output_dir = eval_output_dir / ('epoch_%s' % epoch_id) / cfg.DATA_CONFIG.DATA_SPLIT['test']
+        else:
+            eval_output_dir = eval_output_dir / 'eval_all_default'
+
+        if args.eval_tag is not None:
+            eval_output_dir = eval_output_dir / args.eval_tag
+
+        eval_output_dir.mkdir(parents=True, exist_ok=True)
+        log_file = eval_output_dir / ('log_eval_skip2_%s.txt' % datetime.datetime.now().strftime('%Y%m%d-%H%M%S'))
+        logger = common_utils.create_logger(log_file, rank=cfg.LOCAL_RANK)
+
+        # log to file
+        logger.info('**********************Start logging**********************')
+        gpu_list = os.environ['CUDA_VISIBLE_DEVICES'] if 'CUDA_VISIBLE_DEVICES' in os.environ.keys() else 'ALL'
+        logger.info('CUDA_VISIBLE_DEVICES=%s' % gpu_list)
+
+        if dist_test:
+            logger.info('total_batch_size: %d' % (total_gpus * args.batch_size))
+        for key, val in vars(args).items():
+            logger.info('{:16} {}'.format(key, val))
+        log_config_to_file(cfg, logger=logger)
+
+        ckpt_dir = args.ckpt_dir if args.ckpt_dir is not None else output_dir / 'ckpt'
+        
+        test_set, test_loader, sampler = build_dataloader(
+            dataset_cfg=cfg.DATA_CONFIG,
+            class_names=cfg.CLASS_NAMES,
+            batch_size=args.batch_size,
+            dist=dist_test, workers=args.workers, logger=logger, training=False, eval_flag=True
+        )
+        model = build_network(model_cfg=cfg.MODEL, num_class=len(cfg.CLASS_NAMES), dataset=test_set)
+#         print("___________________________________________________________________________________")
+#         print(model)
+#         print("___________________________________________________________________________________")
+        with torch.no_grad():
+            if args.eval_all:
+                repeat_eval_ckpt(model, test_loader, args, eval_output_dir, logger, ckpt_dir, dist_test=dist_test)
+            else:
+                eval_single_ckpt(model, test_loader, args, eval_output_dir, logger, epoch_id, dist_test=dist_test)
+    except Exception as e:
+        traceback.print_exc()
 
 if __name__ == '__main__':
     main()

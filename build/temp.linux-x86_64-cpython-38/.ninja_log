@@ -1,0 +1,27 @@
+# ninja log v5
+2	1772	1701787256890872568	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/iou3d_nms/src/iou3d_nms_kernel.o	7fbafdb92410bc9e
+1	11530	1701787266646719547	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/iou3d_nms/src/iou3d_cpu.o	abc0e9714d072ddd
+1	11872	1701787266990714184	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/iou3d_nms/src/iou3d_nms.o	3172f50d4afb2898
+1	16800	1701787271910637752	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/iou3d_nms/src/iou3d_nms_api.o	b8bda1ba8aca0891
+3	729	1701787273326615842	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/roiaware_pool3d/src/roiaware_pool3d_kernel.o	8f1a62f740ffcbf8
+2	16198	1701787288790379030	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/roiaware_pool3d/src/roiaware_pool3d.o	710ea825af851853
+2	630	1701787290062359749	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/roipoint_pool3d/src/roipoint_pool3d_kernel.o	9ed0aa375af45400
+2	16299	1701787305726124777	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/roipoint_pool3d/src/roipoint_pool3d.o	1838a30b42bd937b
+2	6224	1701787312586023271	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/pointnet2/pointnet2_stack/src/ball_query.o	8fa8e9aadda34ca2
+4	6241	1701787312602023034	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/pointnet2/pointnet2_stack/src/sampling.o	5fbe5350bfc98797
+3	6401	1701787312762020678	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/pointnet2/pointnet2_stack/src/group_points.o	75f9a8d96f66b29c
+3	6916	1701787313246013549	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/pointnet2/pointnet2_stack/src/interpolate.o	537f434180b6554f
+3	15153	1701787321509892471	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/pointnet2/pointnet2_stack/src/group_points_gpu.o	40fd948784a9875
+2	15175	1701787321533892121	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/pointnet2/pointnet2_stack/src/ball_query_gpu.o	d422856523cb2ec4
+4	15211	1701787321569891597	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/pointnet2/pointnet2_stack/src/interpolate_gpu.o	2c5b37f04bd8928c
+5	15714	1701787322069884309	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/pointnet2/pointnet2_stack/src/sampling_gpu.o	1f74d2b2ce883a3b
+4	19274	1701787325625832613	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/pointnet2/pointnet2_stack/src/pointnet2_api.o	5f8224abb93b4c
+4	5422	1701787331745744152	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/pointnet2/pointnet2_batch/src/group_points.o	715d7757c4b0ecfa
+5	5448	1701787331769743806	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/pointnet2/pointnet2_batch/src/interpolate.o	a2b4bc3eb88ba1a4
+6	6029	1701787332349735457	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/pointnet2/pointnet2_batch/src/sampling.o	b7a340173d23e549
+3	6167	1701787332489733442	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/pointnet2/pointnet2_batch/src/ball_query.o	a02180fa4e005170
+4	15333	1701787341653602296	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/pointnet2/pointnet2_batch/src/ball_query_gpu.o	4ff3b0477c866f57
+4	15335	1701787341657602239	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/pointnet2/pointnet2_batch/src/group_points_gpu.o	bcb71202dd2ad957
+5	15480	1701787341801600189	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/pointnet2/pointnet2_batch/src/interpolate_gpu.o	1bf50d0049601634
+6	15839	1701787342157595124	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/pointnet2/pointnet2_batch/src/sampling_gpu.o	f834df0cb6fd3a15
+6	18047	1701787344365563756	/root/autodl-tmp/smat/build/temp.linux-x86_64-cpython-38/smat/ops/pointnet2/pointnet2_batch/src/pointnet2_api.o	5b436e9476b0a095

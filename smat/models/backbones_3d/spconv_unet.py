@@ -18,7 +18,8 @@ class SparseBasicBlock(spconv.SparseModule):
             inplanes, planes, kernel_size=3, stride=stride, padding=1, bias=False, indice_key=indice_key
         )
         self.bn1 = norm_fn(planes)
-        self.relu = nn.ReLU()
+        # self.relu = nn.ReLU()
+        self.leakyrelu = nn.LeakyReLU(negative_slope=0.01)
         self.conv2 = spconv.SubMConv3d(
             planes, planes, kernel_size=3, stride=1, padding=1, bias=False, indice_key=indice_key
         )
@@ -33,7 +34,7 @@ class SparseBasicBlock(spconv.SparseModule):
 
         out = self.conv1(x)
         out = replace_feature(out, self.bn1(out.features))
-        out = replace_feature(out, self.relu(out.features))
+        out = replace_feature(out, self.leakyrelu(out.features))
 
         out = self.conv2(out)
         out = replace_feature(out, self.bn2(out.features))
@@ -42,7 +43,7 @@ class SparseBasicBlock(spconv.SparseModule):
             identity = self.downsample(x)
 
         out = replace_feature(out, out.features + identity)
-        out = replace_feature(out, self.relu(out.features))
+        out = replace_feature(out, self.leakyrelu(out.features))
 
         return out
 
@@ -65,7 +66,8 @@ class UNetV2(nn.Module):
         self.conv_input = spconv.SparseSequential(
             spconv.SubMConv3d(input_channels, 16, 3, padding=1, bias=False, indice_key='subm1'),
             norm_fn(16),
-            nn.ReLU(),
+            # nn.ReLU(),
+            nn.LeakyReLU(negative_slope=0.01),
         )
         block = post_act_block
 
@@ -102,7 +104,8 @@ class UNetV2(nn.Module):
                 spconv.SparseConv3d(64, 128, (3, 1, 1), stride=(2, 1, 1), padding=last_pad,
                                     bias=False, indice_key='spconv_down2'),
                 norm_fn(128),
-                nn.ReLU(),
+                # nn.ReLU(),
+                nn.LeakyReLU(negative_slope=0.01),
             )
         else:
             self.conv_out = None

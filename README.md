@@ -68,7 +68,9 @@ Pretrained models could be download from [Here](https://drive.google.com/drive/u
 For training, you can customize the training by modifying the parameters in the yaml file of the corresponding model, such as '**CLASS_NAMES**'.
 
 After configuring the yaml file, run the following command to parser the path of config file and the training tag.
+对于训练，可以通过修改对应模型的yaml文件中的参数来自定义训练，例如'**CLASS_NAMES**'。
 
+配置yaml文件后，运行以下命令解析配置文件和训练标签的路径。
 ```bash
 cd smat/tools
 # python train.py --cfg_file cfgs/kitti_models/kitti_car.yaml --extra_tag car
@@ -76,7 +78,7 @@ python train.py --cfg_file $model_config_path
 ```
 
 For training with ddp, you can execute the following command ( ensure be root dir ):
-
+对于使用 ddp 进行训练，您可以执行以下命令（确保是根目录）：
 ```bash
 cd smat/tools
 bash dist_train.sh $NUM_GPUs --cfg_file $model_config_path
@@ -87,7 +89,8 @@ bash dist_train.sh $NUM_GPUs --cfg_file $model_config_path
 ```bash
 cd smat/tools
 # for single model
-python test.py --cfg_file $model_config_path --ckpt $your_saved_ckpt
+python test_track.py --cfg_file cfgs/kitti_models/kitti_car.yaml --ckpt /root/autodl-tmp/kitti_car.pth
+python test_track.py --cfg_file cfgs/kitti_models/kitti_car.yaml --ckpt /root/autodl-tmp/smat/output/kitti_models/kitti_car/car/ckpt/checkpoint_epoch_1.pth
 # for all saved model
 python test.py --cfg_file $model_config_path --ckpt $your_saved_ckpt --eval_all
 ```

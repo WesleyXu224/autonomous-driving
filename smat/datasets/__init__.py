@@ -7,10 +7,12 @@ from smat.utils import common_utils
 
 from .sotdataset import SOTDatasetTemplate
 from .kitti.kitti_sot import KittiSOTDataset
+from .nuscenes.nuscenes_sot import NuscenesSOTDataset
 
 __all__ = {
     'SOTDatasetTemplate': SOTDatasetTemplate,
     'KittiSOTDataset': KittiSOTDataset,
+    'NuscenesSOTDataset': NuscenesSOTDataset
 }
     
 class DistributedSampler(_DistributedSampler):

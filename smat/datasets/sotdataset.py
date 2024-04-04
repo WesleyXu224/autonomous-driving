@@ -8,7 +8,7 @@ from ..utils import common_utils
 from .augmentor.data_augmentor import DataAugmentor
 from .processor.data_processor import DataProcessor
 from .processor.point_feature_encoder import PointFeatureEncoder
-
+import pdb
 class SOTDatasetTemplate(torch_data.Dataset):
     def __init__(self, dataset_cfg=None, class_names=None, training=True, eval_flag=False, root_path=None, logger=None):
         super().__init__()
@@ -125,8 +125,12 @@ class SOTDatasetTemplate(torch_data.Dataset):
         #######################################
         if self.training:
             assert 'gt_boxes' in data_dict, 'gt_boxes should be provided for training'
+#             print(data_dict['gt_boxes'].shape)
+           
             center_offset = data_dict['center_offset']
-            data_dict['gt_boxes'][:3] -= center_offset.reshape(-1)
+            # print(center_offset.reshape(-1).shape)
+            # data_dict['gt_boxes'][:3] -= center_offset.reshape(-1) #KITTI
+            data_dict['gt_boxes'][:,:3] -= center_offset #nuscenes
             data_dict['gt_boxes'] = data_dict['gt_boxes'].reshape(1,-1)
             data_dict = self.data_augmentor.forward(data_dict)
             if len(data_dict['gt_boxes']) == 0:
